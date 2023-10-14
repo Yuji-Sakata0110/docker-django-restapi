@@ -1,0 +1,5 @@
+.python-version
+d-sample
+__pycache__
+data
+.env
