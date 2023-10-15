@@ -12,9 +12,17 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv(".env")
+
+
+def is_running_in_docker():
+    # Docker内のプロセスは通常、cgroupというディレクトリが存在します
+    # このディレクトリが存在すれば、Docker環境内で実行されていると判断できます
+    return os.path.exists("/.dockerenv")
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -76,6 +84,7 @@ WSGI_APPLICATION = "composeexample.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -83,7 +92,8 @@ DATABASES = {
         "USER": os.environ.get("POSTGRES_USER"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
         # Docker環境かどうかを判定し、HOST値をセットする。
-        "HOST": "db" if "DOCKER_CONTAINER" in os.environ else "localhost",
+        # "HOST": "db" if is_running_in_docker() else "localhost",
+        "HOST": "db" if is_running_in_docker() else "localhost",
         "PORT": os.environ.get("PORT"),
     }
 }
